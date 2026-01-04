@@ -1,134 +1,93 @@
-#include <iostream>
+//Students Management System
+#include<iostream>
+#include<string>
 using namespace std;
 
-// Function prototypes
-void lengthConversion();
-void massConversion();
-void temperatureConversion();
-void volumeConversion();
-
-int main() {
-    int choice;
-
-    do {
-        cout << "\n===== UNIT CONVERSION APPLICATION =====\n";
-        cout << "1. Length Conversion\n";
-        cout << "2. Mass Conversion\n";
-        cout << "3. Temperature Conversion\n";
-        cout << "4. Volume Conversion\n";
-        cout << "5. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
-
-        switch(choice) {
-            case 1: lengthConversion(); break;
-            case 2: massConversion(); break;
-            case 3: temperatureConversion(); break;
-            case 4: volumeConversion(); break;
-            case 5: cout << "Exiting the program. Goodbye!\n"; break;
-            default: cout << "Invalid choice! Try again.\n";
-        }
-    } while(choice != 5);
-
-    return 0;
-}
-
-// Function to convert length
-void lengthConversion() {
-    int choice;
-    double value;
-
-    cout << "\n-- LENGTH CONVERSION --\n";
-    cout << "1. Meter to Kilometer\n";
-    cout << "2. Kilometer to Meter\n";
-    cout << "3. Meter to Centimeter\n";
-    cout << "4. Centimeter to Meter\n";
-    cout << "Enter your choice: ";
-    cin >> choice;
-
-    cout << "Enter the value: ";
-    cin >> value;
-
-    switch(choice) {
-        case 1: cout << value << " meters = " << value / 1000 << " kilometers\n"; break;
-        case 2: cout << value << " kilometers = " << value * 1000 << " meters\n"; break;
-        case 3: cout << value << " meters = " << value * 100 << " centimeters\n"; break;
-        case 4: cout << value << " centimeters = " << value / 100 << " meters\n"; break;
-        default: cout << "Invalid choice!\n";
+//Student class
+class Student
+{
+  int rollno;
+  char name[20];
+  int mark[5];   // 5 Subject Mark
+  int tot;
+  float percentage;
+  
+  public:
+  
+  //Student Constructor
+  Student (int input_rollno,char input_name[],int input_marks[])
+  {
+   rollno=input_rollno;
+   strcpy(name, input_name);
+   for(int i=0;i<5;i++) 
+    mark[i]=input_marks[i];
+  }
+  
+  //Calculation part
+  string calculation () 
+  {
+    tot=0; // Reset tot
+    for(int i=0;i<5;i++) 
+    {
+      tot=tot+mark[i];
     }
-}
+    percentage=tot/5.0;
+    
+    if(percentage >= 90) 
+      return "Merit";
+      
+    else if(percentage >= 70) 
+      return "Distinction";
+      
+    else if(percentage >= 60) 
+      return "First_class";
+      
+    else if(percentage >= 50) 
+      return "Second_class"; 
+      
+    else if(percentage >= 40) 
+      return "Third_class";  
+      
+    else
+      return "Fail"; 
+  }
 
-// Function to convert mass
-void massConversion() {
-    int choice;
-    double value;
+  //Display Information
+  void display () 
+  {
+    string result=calculation () ;//call calculation() function
+    cout << "Students name:" <<name<< endl;
+    cout << "Students roll no.:" <<rollno<< endl;
+    for(int i=0;i<5;i++) 
+    cout << "Marks of subject " <<(i+1)<<" : "<<mark[i]<< endl;
+    cout << "Total Mark (out of 500):" <<tot<< endl;
+    cout << "Percentage:" <<percentage<< endl;
+    cout << "Result:" <<result<< endl;
+  }
+};
 
-    cout << "\n-- MASS CONVERSION --\n";
-    cout << "1. Kilogram to Gram\n";
-    cout << "2. Gram to Kilogram\n";
-    cout << "3. Kilogram to Pound\n";
-    cout << "4. Pound to Kilogram\n";
-    cout << "Enter your choice: ";
-    cin >> choice;
-
-    cout << "Enter the value: ";
-    cin >> value;
-
-    switch(choice) {
-        case 1: cout << value << " kg = " << value * 1000 << " grams\n"; break;
-        case 2: cout << value << " grams = " << value / 1000 << " kg\n"; break;
-        case 3: cout << value << " kg = " << value * 2.20462 << " pounds\n"; break;
-        case 4: cout << value << " pounds = " << value / 2.20462 << " kg\n"; break;
-        default: cout << "Invalid choice!\n";
-    }
-}
-
-// Function to convert temperature
-void temperatureConversion() {
-    int choice;
-    double value;
-
-    cout << "\n-- TEMPERATURE CONVERSION --\n";
-    cout << "1. Celsius to Fahrenheit\n";
-    cout << "2. Fahrenheit to Celsius\n";
-    cout << "3. Celsius to Kelvin\n";
-    cout << "4. Kelvin to Celsius\n";
-    cout << "Enter your choice: ";
-    cin >> choice;
-
-    cout << "Enter the value: ";
-    cin >> value;
-
-    switch(choice) {
-        case 1: cout << value << "°C = " << (value * 9/5 + 32) << "°F\n"; break;
-        case 2: cout << value << "°F = " << ((value - 32) * 5/9) << "°C\n"; break;
-        case 3: cout << value << "°C = " << (value + 273.15) << " K\n"; break;
-        case 4: cout << value << " K = " << (value - 273.15) << "°C\n"; break;
-        default: cout << "Invalid choice!\n";
-    }
-}
-
-// Function to convert volume
-void volumeConversion() {
-    int choice;
-    double value;
-
-    cout << "\n-- VOLUME CONVERSION --\n";
-    cout << "1. Liter to Milliliter\n";
-    cout << "2. Milliliter to Liter\n";
-    cout << "3. Liter to Cubic Meter\n";
-    cout << "4. Cubic Meter to Liter\n";
-    cout << "Enter your choice: ";
-    cin >> choice;
-
-    cout << "Enter the value: ";
-    cin >> value;
-
-    switch(choice) {
-        case 1: cout << value << " L = " << value * 1000 << " mL\n"; break;
-        case 2: cout << value << " mL = " << value / 1000 << " L\n"; break;
-        case 3: cout << value << " L = " << value / 1000 << " m³\n"; break;
-        case 4: cout << value << " m³ = " << value * 1000 << " L\n"; break;
-        default: cout << "Invalid choice!\n";
-    }
+int main() 
+{
+ 
+ int input_rollno;
+ char input_name[20];
+ int input_marks[5];
+ 
+ cout << "Enter student name:" ;
+ cin>>input_name;
+ cout << "Enter student roll no. :";
+ cin >>input_rollno;
+ cout << "Enter marks of 5 subject:\n";
+ for(int i=0;i<5;i++) 
+ {
+  cout<<"Subject "<<(i+1)<<": ";
+  cin >> input_marks[i];
+ }
+ 
+ //Construction calling
+ Student s1(input_rollno,input_name,input_marks);
+ cout << "\n---Student record---\n" << endl;
+ s1. display() ;
+ 
+ return 0;
 }
