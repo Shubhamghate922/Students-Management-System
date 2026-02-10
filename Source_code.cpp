@@ -1,93 +1,222 @@
-//Students Management System
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <fstream>
 using namespace std;
 
-//Student class
 class Student
 {
-  int rollno;
-  char name[20];
-  int mark[5];   // 5 Subject Mark
-  int tot;
-  float percentage;
-  
-  public:
-  
-  //Student Constructor
-  Student (int input_rollno,char input_name[],int input_marks[])
-  {
-   rollno=input_rollno;
-   strcpy(name, input_name);
-   for(int i=0;i<5;i++) 
-    mark[i]=input_marks[i];
-  }
-  
-  //Calculation part
-  string calculation () 
-  {
-    tot=0; // Reset tot
-    for(int i=0;i<5;i++) 
-    {
-      tot=tot+mark[i];
-    }
-    percentage=tot/5.0;
-    
-    if(percentage >= 90) 
-      return "Merit";
-      
-    else if(percentage >= 70) 
-      return "Distinction";
-      
-    else if(percentage >= 60) 
-      return "First_class";
-      
-    else if(percentage >= 50) 
-      return "Second_class"; 
-      
-    else if(percentage >= 40) 
-      return "Third_class";  
-      
-    else
-      return "Fail"; 
-  }
+    char name[30];
+    int roll;
+    int marks[3];
+    float per;
 
-  //Display Information
-  void display () 
-  {
-    string result=calculation () ;//call calculation() function
-    cout << "Students name:" <<name<< endl;
-    cout << "Students roll no.:" <<rollno<< endl;
-    for(int i=0;i<5;i++) 
-    cout << "Marks of subject " <<(i+1)<<" : "<<mark[i]<< endl;
-    cout << "Total Mark (out of 500):" <<tot<< endl;
-    cout << "Percentage:" <<percentage<< endl;
-    cout << "Result:" <<result<< endl;
-  }
+public:
+    // Add student record
+    void addStudent()
+    {
+        ofstream fout("student.txt", ios::app);//app-Write data at the end of the file
+        if (!fout)
+        {
+            cout << "Error opening file.\n";
+            return;
+        }
+
+        cout << "Enter Student Name: ";
+        cin.getline(name, 30);
+
+        cout << "Enter Roll Number: ";
+        cin >> roll;
+
+        for (int i = 0; i < 3; i++)
+        {
+            cout << "Enter marks of subject " << i + 1 << ": ";
+            cin >> marks[i];
+        }
+
+        calculatePercentage();
+
+        fout << name << " "
+             << roll << " "
+             << marks[0] << " "
+             << marks[1] << " "
+             << marks[2] << " "
+             << per << endl;
+
+        fout.close();
+        cout << "\nStudent record added successfully.\n";
+    }
+
+    // Calculate percentage
+    void calculatePercentage()
+    {
+        int total = 0;
+        for (int i = 0; i < 3; i++)
+            total += marks[i];
+
+        per = total / 3.0;
+    }
+
+    // Display one student
+    void displayData()
+    {
+        cout << "\nName: " << name;
+        cout << "\nRoll No: " << roll;
+        for (int i = 0; i < 3; i++)
+            cout << "\nSubject " << i + 1 << " Marks: " << marks[i];
+        cout << "\nPercentage: " << per << "%\n";
+    }
+
+    // Read from file
+    bool readFromFile(ifstream &fin)
+    {
+        return (fin >> name >> roll >> marks[0] >> marks[1] >> marks[2] >> per);
+    }
+
+    // Write to file 
+    void writeToFile(ofstream &fout)
+    {
+        fout << name << " "
+             << roll << " "
+             << marks[0] << " "
+             << marks[1] << " "
+             << marks[2] << " "
+             << per << endl;
+    }
+
+    int getRoll()
+    {
+        return roll;
+    }
 };
 
-int main() 
+// Display all students
+void displayAll()
 {
- 
- int input_rollno;
- char input_name[20];
- int input_marks[5];
- 
- cout << "Enter student name:" ;
- cin>>input_name;
- cout << "Enter student roll no. :";
- cin >>input_rollno;
- cout << "Enter marks of 5 subject:\n";
- for(int i=0;i<5;i++) 
- {
-  cout<<"Subject "<<(i+1)<<": ";
-  cin >> input_marks[i];
- }
- 
- //Construction calling
- Student s1(input_rollno,input_name,input_marks);
- cout << "\n---Student record---\n" << endl;
- s1. display() ;
- 
- return 0;
+    Student s;
+    ifstream fin("student.txt");
+
+    if (!fin)
+    {
+        cout << "File not found.\n";
+        return;
+    }
+
+    while (s.readFromFile(fin))
+    {
+        s.displayData();
+    }
+
+    fin.close();
+}
+
+// Search student
+void searchStudent()
+{
+    Student s;
+    int r;
+    bool found = false;
+
+    ifstream fin("student.txt");
+    if (!fin)
+    {
+        cout << "File not found.\n";
+        return;
+    }
+
+    cout << "Enter Roll Number to Search: ";
+    cin >> r;
+
+    while (s.readFromFile(fin))
+    {
+        if (s.getRoll() == r)
+        {
+            s.displayData();
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+        cout << "\nStudent not found.\n";
+
+    fin.close();
+}
+
+// Delete student
+void deleteStudent()
+{
+    Student s;
+    int r;
+    bool found = false;
+
+    ifstream fin("student.txt");
+    ofstream fout("temp.txt");
+
+    if (!fin || !fout)
+    {
+        cout << "File error.\n";
+        return;
+    }
+
+    cout << "Enter Roll Number to Delete: ";
+    cin >> r;
+
+    while (s.readFromFile(fin))
+    {
+        if (s.getRoll() == r)
+            found = true;   // skip record
+        else
+            s.writeToFile(fout);//Write the data in temp. txt
+    }
+
+    fin.close();
+    fout.close();
+
+    remove("student.txt");
+    rename("temp.txt", "student.txt");
+
+    if (found)
+        cout << "\nStudent record deleted successfully.\n";
+    else
+        cout << "\nStudent not found.\n";
+}
+
+int main()
+{
+    Student s;
+    int choice;
+
+    do
+    {
+        cout << "\n----- Student Management System (TEXT FILE) -----";
+        cout << "\n1. Add Student";
+        cout << "\n2. Display All Students";
+        cout << "\n3. Search Student";
+        cout << "\n4. Delete Student";
+        cout << "\n5. Exit";
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            s.addStudent();
+            break;
+        case 2:
+            displayAll();
+            break;
+        case 3:
+            searchStudent();
+            break;
+        case 4:
+            deleteStudent();
+            break;
+        case 5:
+            cout << "\nExiting program...\n";
+            break;
+        default:
+            cout << "\nInvalid choice.\n";
+        }
+    } while (choice != 5);
+
+    return 0;
 }
